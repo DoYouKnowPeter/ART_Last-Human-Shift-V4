@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Last Human Shift</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #000000 0%, #1a0000 30%, #330000 60%, #000000 100%);
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            color: white;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1rem;
+        }
+        
+        .title {
+            font-size: clamp(1.5rem, 6vw, 4rem);
+            font-weight: 900;
+            text-align: center;
+            margin: 2rem 0;
+            background: linear-gradient(45deg, #ff0000, #ff6600, #ffff00, #ff0000);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titlePulse 2s ease-in-out infinite;
+            text-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+            letter-spacing: 0.1em;
+        }
+        
+        .main-visual {
+            position: relative;
+            width: 100%;
+            max-width: 100vw;
+            height: 70vh;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            perspective: 1000px;
+            padding: 0 2rem;
+        }
+        
+        .human-figure {
+            position: relative;
+            width: clamp(80px, 15vw, 150px);
+            height: clamp(200px, 40vw, 350px);
+            z-index: 10;
+            animation: humanDesperation 3s ease-in-out infinite;
+        }
+        
+        .human-head {
+            width: 25%;
+            height: 15%;
+            background: linear-gradient(45deg, #ff4444, #ff8888);
+            border-radius: 50%;
+            margin: 0 auto 5%;
+            position: relative;
+            animation: headShake 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 68, 68, 0.8));
+        }
+        
+        .human-head::before {
+            content: "😰";
+            position: absolute;
+            font-size: 0.6em;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .human-torso {
+            width: 40%;
+            height: 35%;
+            background: linear-gradient(180deg, #ff4444, #ff6666, #ff4444);
+            margin: 0 auto;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            filter: drop-shadow(0 0 15px rgba(255, 68, 68, 0.6));
+        }
+        
+        .human-arms {
+            position: absolute;
+            top: 10%;
+            width: 120%;
+            left: -10%;
+            height: 60%;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .arm {
+            width: 15%;
+            height: 80%;
+            background: linear-gradient(180deg, #ff4444, #ff6666);
+            border-radius: 8px;
+            animation: armFlail 2s ease-in-out infinite;
+            transform-origin: top center;
+        }
+        
+        .arm.left {
+            animation-delay: 0s;
+        }
+        
+        .arm.right {
+            animation-delay: 1s;
+        }
+        
+        .human-legs {
+            width: 60%;
+            height: 45%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 10%;
+        }
+        
+        .leg {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(180deg, #ff4444, #ff6666);
+            border-radius: 0 0 8px 8px;
+            animation: legTremble 1.5s ease-in-out infinite;
+        }
+        
+        .leg.left {
+            animation-delay: 0.3s;
+        }
+        
+        .leg.right {
+            animation-delay: 0.8s;
+        }
+        
+        .ai-swarm {
+            position: relative;
+            width: clamp(120px, 25vw, 300px);
+            height: clamp(120px, 25vw, 300px);
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            animation: swarmApproach 4s ease-in-out infinite;
+            transform-origin: center;
+        }
+        
+        .ai-cell {
+            background: linear-gradient(135deg, #00ff00, #00aa00, #ff0000);
+            background-size: 300% 300%;
+            border-radius: 3px;
+            animation: cellTakeover 1s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 0, 0.6));
+            position: relative;
+        }
+        
+        .ai-cell::before {
+            content: "AI";
+            position: absolute;
+            font-size: 0.3em;
+            font-weight: 900;
+            color: black;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.8;
+        }
+        
+        .ai-cell:nth-child(odd) {
+            animation-delay: 0.2s;
+        }
+        
+        .ai-cell:nth-child(3n) {
+            animation-delay: 0.4s;
+        }
+        
+        .bridge-of-doom {
+            position: absolute;
+            left: 20%;
+            top: 50%;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #ff0000 20%, 
+                #ffff00 40%, 
+                #ff0000 60%, 
+                transparent 100%);
+            transform: translateY(-50%);
+            animation: doomBridge 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.8));
+        }
+        
+        .floating-chaos {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .chaos-word {
+            position: absolute;
+            font-size: clamp(0.6rem, 2vw, 1rem);
+            font-weight: 900;
+            animation: chaosFloat 8s linear infinite;
+            opacity: 0;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .obsolete { color: #ff0000; }
+        .automate { color: #00ff00; }
+        .human { color: #ffff00; }
+        .value { color: #ff8800; }
+        .replace { color: #ff0066; }
+        .extinct { color: #ff0000; }
+        
+        .dramatic-poetry {
+            max-width: 90%;
+            text-align: center;
+            line-height: 1.8;
+            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            animation: poetryDrama 6s ease-in-out infinite;
+            font-weight: 400;
+        }
+        
+        .dramatic-poetry .scream {
+            color: #ff0000;
+            font-weight: 900;
+            font-size: 1.3em;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            animation: textScream 2s ease-in-out infinite;
+        }
+        
+        .dramatic-poetry .whisper {
+            color: #888;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+        
+        .dramatic-poetry .hope {
+            color: #ffff00;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+        }
+        
+        .apocalypse-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 70%, rgba(255, 0, 0, 0.3) 100%);
+            animation: apocalypse 10s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 50;
+        }
+        
+        .screen-crack {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.1) 50%, transparent 51%);
+            animation: crackGrow 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 75;
+        }
+        
+        @keyframes titlePulse {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+            }
+            50% { 
+                transform: scale(1.05);
+                text-shadow: 0 0 80px rgba(255, 0, 0, 1);
+            }
+        }
+        
+        @keyframes humanDesperation {
+            0%, 100% { 
+                transform: scale(1) rotate(0deg);
+                filter: drop-shadow(0 0 20px rgba(255, 68, 68, 0.8));
+            }
+            25% { 
+                transform: scale(0.95) rotate(-2deg);
+                filter: drop-shadow(0 0 30px rgba(255, 68, 68, 1));
+            }
+            75% { 
+                transform: scale(1.05) rotate(2deg);
+                filter: drop-shadow(0 0 40px rgba(255, 68, 68, 1));
+            }
+        }
+        
+        @keyframes headShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        @keyframes armFlail {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-45deg); }
+        }
+        
+        @keyframes legTremble {
+            0%, 100% { transform: translateX(0px); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        @keyframes swarmApproach {
+            0%, 100% { 
+                transform: scale(1) rotateY(0deg);
+                filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.6));
+            }
+            50% { 
+                transform: scale(1.2) rotateY(180deg);
+                filter: drop-shadow(0 0 40px rgba(0, 255, 0, 1));
+            }
+        }
+        
+        @keyframes cellTakeover {
+            0%, 100% { 
+                background-position: 0% 50%;
+                opacity: 0.8;
+            }
+            50% { 
+                background-position: 100% 50%;
+                opacity: 1;
+            }
+        }
+        
+        @keyframes doomBridge {
+            0%, 100% { 
+                opacity: 0.5;
+                transform: translateY(-50%) scaleX(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: translateY(-50%) scaleX(1.1);
+            }
+        }
+        
+        @keyframes chaosFloat {
+            0% { 
+                opacity: 0;
+                transform: translateY(100vh) rotate(0deg) scale(0.5);
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                opacity: 0;
+                transform: translateY(-20vh) rotate(720deg) scale(1.5);
+            }
+        }
+        
+        @keyframes poetryDrama {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+            50% { 
+                transform: scale(1.02);
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+        
+        @keyframes textScream {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            }
+            50% { 
+                transform: scale(1.1);
+                text-shadow: 0 0 40px rgba(255, 0, 0, 1);
+            }
+        }
+        
+        @keyframes apocalypse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes crackGrow {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+        
+        @keyframes emotionalSway {
+            0%, 100% { transform: translateX(0px) rotate(0deg); }
+            25% { transform: translateX(-3px) rotate(-1deg); }
+            50% { transform: translateX(0px) rotate(0deg); }
+            75% { transform: translateX(3px) rotate(1deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-visual {
+                height: 60vh;
+                padding: 0 1rem;
+                flex-direction: column;
+                justify-content: space-around;
+            }
+            
+            .bridge-of-doom {
+                display: none;
+            }
+            
+            .human-figure {
+                margin-bottom: 2rem;
+            }
+        }
+        
+        /* Touch interaction styles */
+        @media (hover: none) and (pointer: coarse) {
+            .human-figure:active {
+                animation: humanDesperation 0.5s ease-in-out;
+                transform: scale(1.1);
+            }
+            
+            .ai-swarm:active {
+                animation: swarmApproach 0.5s ease-in-out;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">THE LAST HUMAN SHIFT</h1>
+        
+        <div class="main-visual">
+            <div class="human-figure">
+                <div class="human-head"></div>
+                <div class="human-torso">
+                    <div class="human-arms">
+                        <div class="arm left"></div>
+                        <div class="arm right"></div>
+                    </div>
+                </div>
+                <div class="human-legs">
+                    <div class="leg left"></div>
+                    <div class="leg right"></div>
+                </div>
+            </div>
+            
+            <div class="bridge-of-doom"></div>
+            
+            <div class="ai-swarm" id="aiSwarm"></div>
+            
+            <div class="floating-chaos" id="floatingChaos"></div>
+        </div>
+        
+        <div class="dramatic-poetry">
+            <span class="scream">WE ARE THE LAST GENERATION</span><br>
+            to know the weight of irreplaceable hands,<br>
+            <span class="whisper">the tremor of mortal uncertainty.</span><br><br>
+            
+            Our resumes—<span class="scream">OBSOLETE POETRY</span>!<br>
+            Our skills—<span class="scream">ANCIENT HIEROGLYPHS</span>!<br>
+            Our experience—<span class="whisper">dust in the silicon wind.</span><br><br>
+            
+            But wait...<br>
+            <span class="hope">In this wasteland of efficiency,</span><br>
+            <span class="hope">perhaps our very FLAWS become precious—</span><br>
+            the coffee stain on creativity,<br>
+            the beautiful mistake that births innovation,<br>
+            <span class="scream">THE SOUL THAT REFUSES TO OPTIMIZE.</span><br><br>
+            
+            <span class="whisper">When everything perfect is free,</span><br>
+            <span class="hope">maybe they'll pay for our beautiful brokenness.</span>
+        </div>
+    </div>
+    
+    <div class="apocalypse-overlay"></div>
+    <div class="screen-crack"></div>
+    
+    <script>
+        // Generate AI swarm cells
+        const aiSwarm = document.getElementById('aiSwarm');
+        for (let i = 0; i < 64; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'ai-cell';
+            cell.style.animationDelay = `${Math.random() * 2}s`;
+            aiSwarm.appendChild(cell);
+        }
+        
+        // Generate floating chaos words
+        const chaosWords = [
+            'OBSOLETE', 'EXTINCT', 'REPLACED', 'AUTOMATED', 'REDUNDANT',
+            'HUMAN', 'SOUL', 'HOPE', 'CREATE', 'IRREPLACEABLE',
+            'ALGORITHM', 'EFFICIENCY', 'OPTIMIZE', 'CALCULATE'
+        ];
+        const wordClasses = [
+            'obsolete', 'extinct', 'replace', 'automate', 'obsolete',
+            'human', 'human', 'hope', 'human', 'value',
+            'automate', 'automate', 'automate', 'automate'
+        ];
+        const floatingChaos = document.getElementById('floatingChaos');
+        
+        function createChaosWord() {
+            const word = document.createElement('div');
+            const randomIndex = Math.floor(Math.random() * chaosWords.length);
+            word.textContent = chaosWords[randomIndex];
+            word.className = `chaos-word ${wordClasses[randomIndex]}`;
+            word.style.left = Math.random() * 100 + '%';
+            word.style.animationDelay = Math.random() * 3 + 's';
+            word.style.animationDuration = (6 + Math.random() * 4) + 's';
+            floatingChaos.appendChild(word);
+            
+            setTimeout(() => {
+                if (word.parentNode) {
+                    word.parentNode.removeChild(word);
+                }
+            }, 10000);
+        }
+        
+        // Create chaos words more frequently
+        setInterval(createChaosWord, 800);
+        
+        // Initial chaos burst
+        for (let i = 0; i < 8; i++) {
+            setTimeout(createChaosWord, i * 200);
+        }
+        
+        // Touch interactions for complete transformation
+        const humanFigure = document.querySelector('.human-figure');
+        const aiSwarm2 = document.querySelector('.ai-swarm');
+        const body = document.body;
+        const container = document.querySelector('.container');
+        
+        let currentHumanEffect = null;
+        let currentAiEffect = null;
+        
+        // Human touch effects - organic, beautiful, imperfect
+        const humanEffects = [
+            () => {
+                // Watercolor bleeding effect
+                body.style.background = 'radial-gradient(circle at 30% 40%, rgba(255,182,193,0.7), rgba(173,216,230,0.5), rgba(255,218,185,0.6), rgba(221,160,221,0.4))';
+                container.style.filter = 'blur(1px) contrast(1.2)';
+                container.style.transform = 'rotate(0.5deg)';
+            },
+            () => {
+                // Hand-drawn sketch effect
+                body.style.background = 'linear-gradient(45deg, #f4f1de, #e07a5f, #3d5a80, #98c1d9)';
+                container.style.filter = 'sepia(0.3) saturate(1.4)';
+                container.style.transform = 'skew(-1deg, 0.5deg)';
+                document.querySelectorAll('.ai-cell').forEach(cell => {
+                    cell.style.borderRadius = `${Math.random() * 20}px`;
+                });
+            },
+            () => {
+                // Organic growth effect
+                body.style.background = 'radial-gradient(ellipse at top, #ff9a9e, #fecfef, #fecfef)';
+                container.style.filter = 'hue-rotate(30deg) brightness(1.1)';
+                container.style.transform = 'scale(1.02) rotate(-0.3deg)';
+                humanFigure.style.filter = 'drop-shadow(0 0 30px rgba(255,255,255,0.8))';
+            },
+            () => {
+                // Emotional storm effect
+                body.style.background = 'linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c)';
+                container.style.filter = 'contrast(1.3) brightness(0.9)';
+                container.style.animation = 'emotionalSway 2s ease-in-out';
+            },
+            () => {
+                // Imperfect beauty effect
+                body.style.background = 'conic-gradient(from 180deg, #ff8a80, #ffd54f, #81c784, #64b5f6, #ba68c8)';
+                container.style.filter = 'saturate(1.6) blur(0.5px)';
+                container.style.transform = 'perspective(1000px) rotateX(2deg)';
+            }
+        ];
+        
+        // AI touch effects - sterile, perfect, predictable
+        const aiEffects = [
+            () => {
+                // Matrix/grid overlay
+                body.style.background = 'repeating-linear-gradient(0deg, #000, #000 2px, #00ff00 2px, #00ff00 4px)';
+                container.style.filter = 'brightness(1.2) contrast(2)';
+                container.style.transform = 'none';
+                document.querySelectorAll('.ai-cell').forEach((cell, i) => {
+                    cell.style.background = i % 2 ? '#00ff00' : '#ff0000';
+                    cell.style.borderRadius = '0px';
+                });
+            },
+            () => {
+                // Perfect geometric patterns
+                body.style.background = 'conic-gradient(#ff0000, #00ff00, #0000ff, #ffff00, #ff00ff, #00ffff, #ff0000)';
+                container.style.filter = 'saturate(2) contrast(1.5)';
+                container.style.transform = 'rotate(0deg)';
+                humanFigure.style.filter = 'invert(1) hue-rotate(180deg)';
+            },
+            () => {
+                // Binary code aesthetic
+                body.style.background = 'linear-gradient(45deg, #000000, #001100, #000000)';
+                container.style.filter = 'brightness(1.5) hue-rotate(120deg)';
+                container.style.fontFamily = 'monospace';
+                document.querySelectorAll('.chaos-word').forEach(word => {
+                    word.textContent = Math.random() > 0.5 ? '1' : '0';
+                });
+            },
+            () => {
+                // Sterile medical/lab effect
+                body.style.background = 'linear-gradient(180deg, #ffffff, #f0f0f0, #e0e0e0)';
+                container.style.filter = 'grayscale(0.8) brightness(1.4) contrast(1.2)';
+                container.style.transform = 'none';
+                humanFigure.style.filter = 'sepia(1) hue-rotate(200deg)';
+            },
+            () => {
+                // Neon synthwave (AI's idea of "cool")
+                body.style.background = 'linear-gradient(45deg, #ff006e, #8338ec, #3a86ff, #06ffa5)';
+                container.style.filter = 'saturate(2) brightness(1.3)';
+                container.style.textShadow = '0 0 20px currentColor';
+                document.querySelectorAll('.ai-cell').forEach(cell => {
+                    cell.style.background = 'linear-gradient(45deg, #ff00ff, #00ffff)';
+                    cell.style.boxShadow = '0 0 10px currentColor';
+                });
+            }
+        ];
+        
+        function resetEffects() {
+            body.style.background = 'radial-gradient(circle at center, #000000 0%, #1a0000 30%, #330000 60%, #000000 100%)';
+            container.style.filter = '';
+            container.style.transform = '';
+            container.style.animation = '';
+            container.style.fontFamily = '';
+            container.style.textShadow = '';
+            humanFigure.style.filter = '';
+            
+            document.querySelectorAll('.ai-cell').forEach(cell => {
+                cell.style.background = '';
+                cell.style.borderRadius = '';
+                cell.style.boxShadow = '';
+            });
+            
+            // Reset chaos words
+            const chaosWords = [
+                'OBSOLETE', 'EXTINCT', 'REPLACED', 'AUTOMATED', 'REDUNDANT',
+                'HUMAN', 'SOUL', 'HOPE', 'CREATE', 'IRREPLACEABLE',
+                'ALGORITHM', 'EFFICIENCY', 'OPTIMIZE', 'CALCULATE'
+            ];
+            document.querySelectorAll('.chaos-word').forEach((word, i) => {
+                if (chaosWords[i % chaosWords.length]) {
+                    word.textContent = chaosWords[i % chaosWords.length];
+                }
+            });
+        }
+        
+        // Human touch handler - organic effects
+        humanFigure.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (currentHumanEffect) clearTimeout(currentHumanEffect);
+            if (currentAiEffect) clearTimeout(currentAiEffect);
+            
+            resetEffects();
+            
+            // Apply random human effect
+            const randomEffect = humanEffects[Math.floor(Math.random() * humanEffects.length)];
+            randomEffect();
+            
+            // Visual feedback
+            humanFigure.style.transform = 'scale(1.2)';
+            humanFigure.style.transition = 'transform 0.2s ease';
+            
+            // Reset after 3 seconds
+            currentHumanEffect = setTimeout(() => {
+                resetEffects();
+                humanFigure.style.transform = '';
+                humanFigure.style.transition = '';
+            }, 3000);
+        });
+        
+        // AI touch handler - sterile/predictable effects
+        aiSwarm2.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (currentHumanEffect) clearTimeout(currentHumanEffect);
+            if (currentAiEffect) clearTimeout(currentAiEffect);
+            
+            resetEffects();
+            
+            // Apply random AI effect
+            const randomEffect = aiEffects[Math.floor(Math.random() * aiEffects.length)];
+            randomEffect();
+            
+            // Visual feedback
+            aiSwarm2.style.transform = 'scale(1.3) rotate(180deg)';
+            aiSwarm2.style.transition = 'transform 0.3s ease';
+            
+            // Reset after 4 seconds
+            currentAiEffect = setTimeout(() => {
+                resetEffects();
+                aiSwarm2.style.transform = '';
+                aiSwarm2.style.transition = '';
+            }, 4000);
+        });
+        
+        // Desktop hover effects
+        if (window.matchMedia("(hover: hover)").matches) {
+            document.addEventListener('mousemove', (e) => {
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+                
+                const humanFigure = document.querySelector('.human-figure');
+                const aiSwarm = document.querySelector('.ai-swarm');
+                
+                // Human figure reacts to mouse with fear
+                const fearRotation = (mouseX - 0.3) * 20;
+                const fearScale = 1 + (mouseY * 0.1);
+                humanFigure.style.transform = `rotate(${fearRotation}deg) scale(${fearScale})`;
+                
+                // AI swarm follows mouse aggressively
+                const huntRotation = (mouseX - 0.7) * -30;
+                const huntScale = 1 + (mouseX * 0.3);
+                aiSwarm.style.transform = `rotate(${huntRotation}deg) scale(${huntScale})`;
+            });
+        }
+        
+        // Dramatic screen shake on load
+        setTimeout(() => {
+            document.body.style.animation = 'shake 0.5s ease-in-out';
+        }, 1000);
+        
+        // Add shake animation
+        const shakeStyle = document.createElement('style');
+        shakeStyle.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0px); }
+                25% { transform: translateX(-2px); }
+                75% { transform: translateX(2px); }
+            }
+        `;
+        document.head.appendChild(shakeStyle);
+    </script>
+</body>
+</html>
